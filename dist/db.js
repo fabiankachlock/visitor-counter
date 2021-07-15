@@ -39,18 +39,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryAndUpdateSite = exports.db = exports.isDev = void 0;
 var pg_1 = require("pg");
 exports.isDev = process.env.DEV === 'true';
-exports.db = exports.isDev
-    ? new pg_1.Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: true
-    })
-    : new pg_1.Pool({
+var clientConfig = exports.isDev
+    ? {
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         port: parseInt(process.env.DB_PORT || '0'),
         host: process.env.DB_HOST,
         database: 'test-visitor-counter',
-    });
+    }
+    : {
+        connectionString: process.env.DATABASE_URL,
+        ssl: true
+    };
+console.log(clientConfig, process.env.DEV);
+exports.db = new pg_1.Pool(clientConfig);
 var queryAndUpdateSite = function (url) { return __awaiter(void 0, void 0, void 0, function () {
     var client, result, row, err_1;
     return __generator(this, function (_a) {
@@ -60,11 +62,11 @@ var queryAndUpdateSite = function (url) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, exports.db.connect()];
             case 1:
                 client = _a.sent();
-                return [4 /*yield*/, client.query('SELECT * FROM "test-visitors" WHERE site=\'' + url + '\';')];
+                return [4 /*yield*/, client.query('SELECT * FROM "test-visitors" WHERE site=$1;', [url])];
             case 2:
                 result = _a.sent();
                 if (!(result.rowCount == 0)) return [3 /*break*/, 4];
-                return [4 /*yield*/, client.query('INSERT INTO "test-visitors" (site) VALUES (\'' + url + '\');')];
+                return [4 /*yield*/, client.query('INSERT INTO "test-visitors" (site) VALUES ($1);', [url])];
             case 3:
                 _a.sent();
                 client.release();
@@ -75,7 +77,7 @@ var queryAndUpdateSite = function (url) { return __awaiter(void 0, void 0, void 
             case 4:
                 row = result.rows[0];
                 console.info('[INFO] Queryed site: ' + url);
-                return [4 /*yield*/, client.query('UPDATE "test-visitors" SET visitors = visitors + 1 WHERE site=\'' + url + '\';')];
+                return [4 /*yield*/, client.query('UPDATE "test-visitors" SET visitors = visitors + 1 WHERE site=$1;', [url])];
             case 5:
                 _a.sent();
                 client.release();
