@@ -1,5 +1,5 @@
 import { Pool } from 'pg';
-export declare const isDev: string | undefined;
+export declare const isDev: boolean;
 export declare type QueryResult = {
     site: string;
     visitors: number;

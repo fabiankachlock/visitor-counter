@@ -38,7 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.queryAndUpdateSite = exports.db = exports.isDev = void 0;
 var pg_1 = require("pg");
-exports.isDev = process.env.DEV;
+exports.isDev = process.env.DEV === 'true';
 exports.db = exports.isDev
     ? new pg_1.Pool({
         connectionString: process.env.DATABASE_URL,

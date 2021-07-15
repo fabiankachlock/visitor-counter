@@ -1,5 +1,8 @@
-import express, { response } from 'express';
+require('dotenv').config()
+
+import express from 'express';
 import { queryAndUpdateSite } from './db';
+
 
 const PORT = process.env.PORT || 9000;
 const server = express()

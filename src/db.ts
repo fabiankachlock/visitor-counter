@@ -1,6 +1,6 @@
 import { Pool } from 'pg';
 
-export const isDev = process.env.DEV
+export const isDev = process.env.DEV === 'true'
 
 export type QueryResult = {
     site: string;
