@@ -19,7 +19,9 @@ const clientConfig: ClientConfig = isDev
     }
     : {
         connectionString: process.env.DATABASE_URL,
-        ssl: true
+        ssl: {
+            rejectUnauthorized: false
+        }
     }
 
 export const db = new Pool(clientConfig)

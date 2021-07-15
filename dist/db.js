@@ -49,9 +49,10 @@ var clientConfig = exports.isDev
     }
     : {
         connectionString: process.env.DATABASE_URL,
-        ssl: true
+        ssl: {
+            rejectUnauthorized: false
+        }
     };
-console.log(clientConfig, process.env.DEV);
 exports.db = new pg_1.Pool(clientConfig);
 var queryAndUpdateSite = function (url) { return __awaiter(void 0, void 0, void 0, function () {
     var client, result, row, err_1;
