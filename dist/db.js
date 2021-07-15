@@ -35,35 +35,58 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = __importDefault(require("express"));
-var db_1 = require("./db");
-var PORT = process.env.PORT || 9000;
-var server = express_1.default();
-server.use(function (req, _res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        console.info('[' + req.method + '] ' + req.url);
-        next();
-        return [2 /*return*/];
+exports.queryAndUpdateSite = exports.db = exports.isDev = void 0;
+var pg_1 = require("pg");
+exports.isDev = process.env.DEV;
+exports.db = exports.isDev
+    ? new pg_1.Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: true
+    })
+    : new pg_1.Pool({
+        user: process.env.DB_USER,
+        password: process.env.DB_PASS,
+        port: parseInt(process.env.DB_PORT || '0'),
+        host: process.env.DB_HOST,
+        database: 'test-visitor-counter',
     });
-}); });
-server.get('/ping', function (_req, res) {
-    res.send('pong');
-});
-server.get('/db', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+var queryAndUpdateSite = function (url) { return __awaiter(void 0, void 0, void 0, function () {
+    var client, result, row, err_1;
     return __generator(this, function (_a) {
-        db_1.queryAndUpdateSite('test').then(function (result) {
-            if (typeof result === 'object') {
-                res.send('Found' + result.site + ' .-> ' + result.visitors);
-            }
-            else {
-                res.send('Error: ' + result);
-            }
-        });
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                _a.trys.push([0, 7, , 8]);
+                return [4 /*yield*/, exports.db.connect()];
+            case 1:
+                client = _a.sent();
+                return [4 /*yield*/, client.query('SELECT * FROM "test-visitors" WHERE site=\'' + url + '\';')];
+            case 2:
+                result = _a.sent();
+                if (!(result.rowCount == 0)) return [3 /*break*/, 4];
+                return [4 /*yield*/, client.query('INSERT INTO "test-visitors" (site) VALUES (\'' + url + '\');')];
+            case 3:
+                _a.sent();
+                client.release();
+                return [2 /*return*/, {
+                        site: url,
+                        visitors: 0
+                    }];
+            case 4:
+                row = result.rows[0];
+                console.info('[INFO] Queryed site: ' + url);
+                return [4 /*yield*/, client.query('UPDATE "test-visitors" SET visitors = visitors + 1 WHERE site=\'' + url + '\';')];
+            case 5:
+                _a.sent();
+                client.release();
+                return [2 /*return*/, row];
+            case 6: return [3 /*break*/, 8];
+            case 7:
+                err_1 = _a.sent();
+                console.error('[ERROR] When querying site ' + url + ':' + err_1);
+                return [2 /*return*/, "Error: " + err_1];
+            case 8: return [2 /*return*/];
+        }
     });
-}); });
-server.listen(PORT);
+}); };
+exports.queryAndUpdateSite = queryAndUpdateSite;
