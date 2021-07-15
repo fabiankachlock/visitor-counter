@@ -1,0 +1,9 @@
+{
+  "name": "visitor-counter",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:fabiankachlock/visitor-counter.git",
+  "author": "fabiankachlock <fabian.kachlock@icloud.com>",
+  "license": "MIT",
+  "private": false
+}
