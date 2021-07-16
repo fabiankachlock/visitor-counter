@@ -42,6 +42,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require('dotenv').config();
 var express_1 = __importDefault(require("express"));
 var db_1 = require("./db");
+var template_1 = require("./template");
 var PORT = process.env.PORT || 9000;
 var server = express_1.default();
 server.use(function (req, _res, next) { return __awaiter(void 0, void 0, void 0, function () {
@@ -54,11 +55,17 @@ server.use(function (req, _res, next) { return __awaiter(void 0, void 0, void 0,
 server.get('/ping', function (_req, res) {
     res.send('pong');
 });
-server.get('/db', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+server.get('/visitors', function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var site;
     return __generator(this, function (_a) {
-        db_1.queryAndUpdateSite('test').then(function (result) {
+        site = req.query.site;
+        if (!site.includes(req.hostname)) {
+            res.send('Error: Invalid');
+            return [2 /*return*/];
+        }
+        db_1.queryAndUpdateSite(site).then(function (result) {
             if (typeof result === 'object') {
-                res.send('Found' + result.site + ' .-> ' + result.visitors);
+                res.send(template_1.constructResponse(result.visitors));
             }
             else {
                 res.send('Error: ' + result);
