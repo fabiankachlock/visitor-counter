@@ -1,12 +1,14 @@
 require('dotenv').config()
 
 import express from 'express';
+import cors from 'cors';
 import { queryAndUpdateSite } from './db';
 import { constructResponse } from './template';
 
-
 const PORT = process.env.PORT || 9000;
 const server = express()
+
+server.use(cors())
 
 server.use(async (req, _res, next) => {
     console.info('[' + req.method + '] ' + req.url)
