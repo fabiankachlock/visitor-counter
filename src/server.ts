@@ -20,10 +20,6 @@ server.get('/ping', (_req, res) => {
 server.get('/visitors', async (req, res) => {
     const { site } = req.query as { site: string }
 
-    if (!site.includes(req.hostname)) {
-        res.send('Error: Invalid')
-        return
-    }
     queryAndUpdateSite(site).then(result => {
         if (typeof result === 'object') {
             res.send(constructResponse(result.visitors))
